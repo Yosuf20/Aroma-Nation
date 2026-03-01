@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Checkout — Aroma Nation</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,400&family=Cinzel:wght@400;600&family=Montserrat:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root { --gold:#c9a84c; --gold-dim:#8a6f2e; --black:#080808; --dark:#0e0e0e; --card:#111111; --border:#2a2218; --text:#e8e0d0; --muted:#7a7060; }
+  body { background: var(--black); color: var(--text); font-family: 'Montserrat', sans-serif; font-weight: 300; min-height: 100vh; }
+  nav { display: flex; align-items: center; justify-content: space-between; padding: 24px 60px; border-bottom: 1px solid var(--border); background: var(--dark); }
+  .nav-logo { font-family: 'Cinzel', serif; font-size: 20px; letter-spacing: 0.3em; color: var(--gold); text-decoration: none; }
+  .nav-back { font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted); text-decoration: none; }
+  .nav-back:hover { color: var(--gold); }
+
+  .page { max-width: 1100px; margin: 0 auto; padding: 60px 40px; }
+  .page-title { font-family: 'Cinzel', serif; font-size: 36px; letter-spacing: 0.1em; color: var(--gold); margin-bottom: 60px; }
+  .checkout-layout { display: grid; grid-template-columns: 1fr 380px; gap: 40px; }
+
+  .form-section { background: var(--card); border: 1px solid var(--border); padding: 40px; }
+  .form-section-title { font-family: 'Cinzel', serif; font-size: 16px; letter-spacing: 0.15em; color: var(--text); margin-bottom: 28px; padding-bottom: 16px; border-bottom: 1px solid var(--border); }
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+  .form-field { display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; }
+  .form-field.full { grid-column: 1/-1; }
+  label { font-size: 9px; letter-spacing: 0.3em; text-transform: uppercase; color: var(--muted); }
+  input, textarea, select { background: var(--black); border: 1px solid var(--border); color: var(--text); padding: 12px 16px; font-family: 'Montserrat', sans-serif; font-size: 13px; font-weight: 300; outline: none; transition: border-color 0.3s; width: 100%; }
+  input:focus, textarea:focus, select:focus { border-color: var(--gold-dim); }
+  select { appearance: none; cursor: pointer; }
+  textarea { resize: vertical; min-height: 80px; }
+
+  .order-summary { background: var(--card); border: 1px solid var(--border); padding: 32px; height: fit-content; position: sticky; top: 30px; }
+  .summary-title { font-family: 'Cinzel', serif; font-size: 18px; letter-spacing: 0.1em; margin-bottom: 24px; }
+  .order-items { margin-bottom: 24px; border-bottom: 1px solid var(--border); padding-bottom: 24px; }
+  .order-item { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; font-size: 13px; }
+  .order-item-name { color: var(--text); }
+  .order-item-qty { color: var(--muted); font-size: 11px; margin-top: 2px; }
+  .order-item-price { color: var(--gold); font-family: 'Cormorant Garamond', serif; font-size: 18px; }
+  .summary-row { display: flex; justify-content: space-between; margin-bottom: 12px; font-size: 13px; color: var(--muted); }
+  .summary-row.total { border-top: 1px solid var(--border); padding-top: 16px; margin-top: 8px; font-family: 'Cormorant Garamond', serif; font-size: 26px; color: var(--gold); }
+
+  .place-btn { width: 100%; padding: 18px; background: var(--gold); color: var(--black); border: none; font-family: 'Montserrat', sans-serif; font-size: 11px; letter-spacing: 0.4em; text-transform: uppercase; cursor: pointer; margin-top: 24px; font-weight: 500; transition: opacity 0.3s; }
+  .place-btn:hover { opacity: 0.9; }
+  .place-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  .success-screen { text-align: center; padding: 80px 40px; }
+  .success-screen h2 { font-family: 'Cinzel', serif; font-size: 36px; color: var(--gold); margin-bottom: 20px; }
+  .success-screen p { color: var(--muted); font-family: 'Cormorant Garamond', serif; font-size: 20px; font-style: italic; margin-bottom: 40px; }
+  .success-screen a { display: inline-block; padding: 14px 40px; border: 1px solid var(--gold); color: var(--gold); text-decoration: none; font-size: 10px; letter-spacing: 0.4em; text-transform: uppercase; transition: all 0.3s; }
+  .success-screen a:hover { background: var(--gold); color: var(--black); }
+
+  @media (max-width: 768px) { .checkout-layout { grid-template-columns: 1fr; } nav, .page { padding: 20px 24px; } .form-grid { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<nav>
+  <a href="/" class="nav-logo">AROMA NATION</a>
+  <a href="/cart" class="nav-back">← Back to Cart</a>
+</nav>
+
+<div class="page">
+  <h1 class="page-title">Checkout</h1>
+  <div id="mainContent"></div>
+</div>
+
+<script>
+  const checkoutData = JSON.parse(sessionStorage.getItem('an_checkout') || '{"cart":[],"total":0}');
+
+  function renderCheckout() {
+    const { cart, coupon, total } = checkoutData;
+    if (!cart || cart.length === 0) {
+      window.location.href = '/cart';
+      return;
+    }
+    const subtotal = cart.reduce((s, i) => s + i.price * i.quantity, 0);
+    const discount = coupon ? coupon.discount : 0;
+
+    document.getElementById('mainContent').innerHTML = `
+      <div class="checkout-layout">
+        <div>
+          <div class="form-section">
+            <h2 class="form-section-title">Delivery Information</h2>
+            <div class="form-grid">
+              <div class="form-field"><label>Full Name *</label><input type="text" id="name" placeholder="Your full name" required></div>
+              <div class="form-field"><label>Phone *</label><input type="tel" id="phone" placeholder="+91 XXXXX XXXXX" required></div>
+              <div class="form-field full"><label>Email *</label><input type="email" id="email" placeholder="your@email.com" required></div>
+              <div class="form-field full"><label>Shipping Address *</label><textarea id="address" placeholder="House no., Street, Area, City, State, PIN" required></textarea></div>
+              <div class="form-field full"><label>Payment Method</label>
+                <select id="payment">
+                  <option value="COD">Cash on Delivery</option>
+                  <option value="UPI">UPI</option>
+                  <option value="Card">Credit / Debit Card</option>
+                  <option value="NetBanking">Net Banking</option>
+                </select>
+              </div>
+              <div class="form-field full"><label>Order Notes (Optional)</label><input type="text" id="notes" placeholder="Any special instructions..."></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="order-summary">
+          <h2 class="summary-title">Order Summary</h2>
+          <div class="order-items">
+            ${cart.map(i => `
+              <div class="order-item">
+                <div>
+                  <div class="order-item-name">${i.product_name}</div>
+                  <div class="order-item-qty">${i.size_ml}ml × ${i.quantity}</div>
+                </div>
+                <div class="order-item-price">₹${(i.price * i.quantity).toLocaleString('en-IN')}</div>
+              </div>
+            `).join('')}
+          </div>
+          <div class="summary-row"><span>Subtotal</span><span>₹${subtotal.toLocaleString('en-IN')}</span></div>
+          ${coupon ? `<div class="summary-row" style="color:#4caf50"><span>Coupon (${coupon.code})</span><span>−₹${discount.toLocaleString('en-IN')}</span></div>` : ''}
+          <div class="summary-row"><span>Shipping</span><span style="color:var(--gold)">Free</span></div>
+          <div class="summary-row total"><span>Total</span><span>₹${total.toLocaleString('en-IN')}</span></div>
+          <button class="place-btn" id="placeBtn" onclick="placeOrder()">Place Order</button>
+          <p style="font-size:10px;color:var(--muted);text-align:center;margin-top:16px;letter-spacing:0.1em">Secure & Encrypted Checkout</p>
+        </div>
+      </div>
+    `;
+  }
+
+  async function placeOrder() {
+    const { cart, coupon, total } = checkoutData;
+    const name = document.getElementById('name').value.trim();
+    const email = document.getElementById('email').value.trim();
+    const phone = document.getElementById('phone').value.trim();
+    const address = document.getElementById('address').value.trim();
+    const payment = document.getElementById('payment').value;
+    const notes = document.getElementById('notes').value.trim();
+
+    if (!name || !email || !phone || !address) { alert('Please fill in all required fields.'); return; }
+
+    const btn = document.getElementById('placeBtn');
+    btn.disabled = true;
+    btn.textContent = 'Placing Order...';
+
+    const subtotal = cart.reduce((s, i) => s + i.price * i.quantity, 0);
+    const discount = coupon ? coupon.discount : 0;
+
+    try {
+      const res = await fetch('/api/orders', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          customer_name: name, customer_email: email, customer_phone: phone,
+          shipping_address: address, items: cart,
+          coupon_code: coupon ? coupon.code : null,
+          subtotal, discount_amount: discount, total, payment_method: payment, notes
+        })
+      });
+      const data = await res.json();
+      if (data.success) {
+        localStorage.removeItem('an_cart');
+        sessionStorage.removeItem('an_checkout');
+        document.getElementById('mainContent').innerHTML = `
+          <div class="success-screen">
+            <h2>Order Placed!</h2>
+            <p>Thank you. Your order #${data.order_id} has been received.<br>We'll contact you shortly on ${phone}.</p>
+            <a href="/">Continue Shopping</a>
+          </div>
+        `;
+      } else {
+        alert('Error: ' + data.error);
+        btn.disabled = false;
+        btn.textContent = 'Place Order';
+      }
+    } catch {
+      alert('Something went wrong. Please try again.');
+      btn.disabled = false;
+      btn.textContent = 'Place Order';
+    }
+  }
+
+  renderCheckout();
+</script>
+</body>
+</html>
