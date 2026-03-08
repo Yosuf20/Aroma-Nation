@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Collection — Aroma Nation</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,400&family=Cinzel:wght@400;600&family=Montserrat:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root { --gold:#ffffff; --gold-light:#f0f0f0; --gold-dim:#aaaaaa; --black:#080808; --dark:#0e0e0e; --card:#111111; --border:#2a2218; --text:#e8e0d0; --muted:#7a7060; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--black); color: var(--text); font-family: 'Montserrat', sans-serif; font-weight: 300; }
+
+  nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; display: flex; align-items: center; justify-content: space-between; padding: 24px 60px; background: rgba(8,8,8,0.98); border-bottom: 1px solid var(--border); }
+  .nav-logo { font-family: 'Cinzel', serif; font-size: 20px; letter-spacing: 0.3em; color: var(--gold); text-decoration: none; }
+  .nav-right { display: flex; align-items: center; gap: 32px; }
+  .nav-back { font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted); text-decoration: none; transition: color 0.3s; }
+  .nav-back:hover { color: var(--gold); }
+  .cart-icon { position: relative; color: var(--text); text-decoration: none; font-size: 18px; }
+  .cart-count { position: absolute; top: -8px; right: -10px; background: var(--gold); color: var(--black); font-size: 9px; width: 18px; height: 18px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 500; }
+
+  .page-header { padding: 140px 60px 60px; text-align: center; border-bottom: 1px solid var(--border); background: var(--dark); }
+  .page-tag { font-size: 10px; letter-spacing: 0.5em; text-transform: uppercase; color: var(--gold); display: block; margin-bottom: 16px; }
+  .page-title { font-family: 'Cinzel', serif; font-size: clamp(36px, 6vw, 72px); font-weight: 400; letter-spacing: 0.1em; color: var(--text); margin-bottom: 16px; }
+  .page-subtitle { font-family: 'Cormorant Garamond', serif; font-size: 18px; font-style: italic; color: var(--muted); }
+
+  /* NOTE FILTER TABS */
+  .filter-bar { padding: 24px 60px; border-bottom: 1px solid var(--border); background: var(--dark); display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+  .filter-label { font-size: 9px; letter-spacing: 0.3em; text-transform: uppercase; color: var(--muted); margin-right: 8px; }
+  .filter-btn { padding: 8px 20px; border: 1px solid var(--border); background: transparent; color: var(--muted); font-family: 'Montserrat', sans-serif; font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; cursor: pointer; transition: all 0.25s; }
+  .filter-btn:hover { border-color: var(--gold-dim); color: var(--text); }
+  .filter-btn.active { border-color: var(--gold); background: rgba(255,255,255,0.05); color: var(--gold); }
+
+  /* PRODUCTS */
+  .products-section { padding: 60px; }
+  .products-count { font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted); margin-bottom: 40px; }
+  .products-count span { color: var(--gold); }
+
+  .products-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 2px; }
+
+  .product-card { background: var(--card); border: 1px solid var(--border); overflow: hidden; transition: transform 0.4s, border-color 0.4s; display: flex; flex-direction: column; cursor: pointer; }
+  .product-card:hover { transform: translateY(-6px); border-color: var(--gold-dim); }
+  .product-img-wrap { height: 300px; background: linear-gradient(135deg, #0f0d08, #1a1508); display: flex; align-items: center; justify-content: center; overflow: hidden; position: relative; }
+  .product-img-wrap img { width: 58%; height: 82%; object-fit: contain; transition: transform 0.5s; filter: drop-shadow(0 20px 40px rgba(255,255,255,0.06)); }
+  .product-card:hover .product-img-wrap img { transform: scale(1.06) translateY(-4px); }
+  .product-badge { position: absolute; top: 16px; right: 16px; background: var(--gold); color: var(--black); font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase; padding: 4px 10px; font-weight: 500; }
+
+  .product-info { padding: 24px; flex: 1; display: flex; flex-direction: column; }
+  .product-category { font-size: 9px; letter-spacing: 0.4em; text-transform: uppercase; color: var(--gold); margin-bottom: 8px; opacity: 0.7; }
+  .product-name { font-family: 'Cinzel', serif; font-size: 18px; color: var(--text); margin-bottom: 8px; }
+  .product-desc { font-family: 'Cormorant Garamond', serif; font-size: 14px; font-style: italic; color: var(--muted); line-height: 1.6; margin-bottom: 20px; }
+
+  .size-options { display: flex; gap: 6px; margin-bottom: 16px; flex-wrap: wrap; }
+  .size-btn { padding: 6px 12px; border: 1px solid var(--border); background: transparent; color: var(--muted); font-family: 'Montserrat', sans-serif; font-size: 10px; cursor: pointer; transition: all 0.2s; }
+  .size-btn:hover { border-color: var(--gold-dim); color: var(--gold); }
+  .size-btn.active { border-color: var(--gold); color: var(--gold); background: rgba(255,255,255,0.04); }
+
+  .product-footer { display: flex; align-items: center; justify-content: space-between; margin-top: auto; padding-top: 16px; border-top: 1px solid var(--border); }
+  .product-price { font-family: 'Cormorant Garamond', serif; font-size: 26px; color: var(--gold); }
+  .product-price span { font-size: 13px; color: var(--muted); }
+  .add-btn { padding: 9px 18px; background: transparent; border: 1px solid var(--gold-dim); color: var(--gold); font-family: 'Montserrat', sans-serif; font-size: 9px; letter-spacing: 0.25em; text-transform: uppercase; cursor: pointer; transition: all 0.3s; position: relative; overflow: hidden; }
+  .add-btn::before { content: ''; position: absolute; inset: 0; background: var(--gold); transform: scaleX(0); transform-origin: left; transition: transform 0.3s; z-index: -1; }
+  .add-btn:hover { color: var(--black); }
+  .add-btn:hover::before { transform: scaleX(1); }
+
+  .no-results { text-align: center; padding: 80px; color: var(--muted); font-family: 'Cormorant Garamond', serif; font-size: 22px; font-style: italic; grid-column: 1/-1; }
+
+  .toast { position: fixed; bottom: 30px; right: 30px; background: var(--card); border: 1px solid var(--gold); padding: 16px 24px; font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--gold); z-index: 1000; transform: translateY(100px); opacity: 0; transition: all 0.4s; }
+  .toast.show { transform: translateY(0); opacity: 1; }
+
+  footer { padding: 48px 60px; border-top: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; }
+  .footer-logo { font-family: 'Cinzel', serif; font-size: 18px; letter-spacing: 0.3em; color: var(--gold); }
+  .footer-text { font-size: 11px; color: var(--muted); letter-spacing: 0.1em; }
+
+  @media (max-width: 768px) { nav, .page-header, .filter-bar, .products-section, footer { padding-left: 24px; padding-right: 24px; } .page-header { padding-top: 100px; } }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="/" class="nav-logo">AROMA NATION</a>
+  <div class="nav-right">
+    <a href="/" class="nav-back">← Home</a>
+    <a href="/cart" class="cart-icon">🛒<span class="cart-count" id="cartCount">0</span></a>
+  </div>
+</nav>
+
+<div class="page-header">
+  <span class="page-tag">Our Collection</span>
+  <h1 class="page-title" id="pageTitle">ALL FRAGRANCES</h1>
+  <p class="page-subtitle" id="pageSubtitle">Explore our complete range of luxury perfumes</p>
+</div>
+
+<div class="filter-bar">
+  <span class="filter-label">Filter by Note:</span>
+  <button class="filter-btn active" onclick="filterByNote('all', this)">All</button>
+  <button class="filter-btn" onclick="filterByNote('Woody', this)">🌿 Woody</button>
+  <button class="filter-btn" onclick="filterByNote('Floral', this)">🌸 Floral</button>
+  <button class="filter-btn" onclick="filterByNote('Oud', this)">🕌 Oud</button>
+  <button class="filter-btn" onclick="filterByNote('Citrus', this)">🍊 Citrus</button>
+  <button class="filter-btn" onclick="filterByNote('Amber', this)">🌙 Amber</button>
+  <button class="filter-btn" onclick="filterByNote('Incense', this)">🔥 Incense</button>
+</div>
+
+<div class="products-section">
+  <div class="products-count" id="productsCount"></div>
+  <div class="products-grid" id="productsGrid"></div>
+</div>
+
+<footer>
+  <div class="footer-logo">AROMA NATION</div>
+  <p class="footer-text">© 2024 Aroma Nation. All Rights Reserved.</p>
+  <p class="footer-text" style="color:var(--gold-dim)">Crafted with passion · Delivered with elegance</p>
+</footer>
+
+<div class="toast" id="toast"></div>
+
+<script>
+  function getCart() { return JSON.parse(localStorage.getItem('an_cart') || '[]'); }
+  function saveCart(c) { localStorage.setItem('an_cart', JSON.stringify(c)); updateCartCount(); }
+  function updateCartCount() {
+    document.getElementById('cartCount').textContent = getCart().reduce((s, i) => s + i.quantity, 0);
+  }
+  updateCartCount();
+
+  let toastTimeout;
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg; t.classList.add('show');
+    clearTimeout(toastTimeout);
+    toastTimeout = setTimeout(() => t.classList.remove('show'), 2500);
+  }
+
+  let allProducts = [];
+  let activeNote = 'all';
+
+  // Read note from URL
+  const urlNote = new URLSearchParams(window.location.search).get('note');
+  if (urlNote) {
+    activeNote = urlNote;
+    document.getElementById('pageTitle').textContent = urlNote.toUpperCase() + ' FRAGRANCES';
+    document.getElementById('pageSubtitle').textContent = `Explore our ${urlNote.toLowerCase()} fragrance collection`;
+    // Activate correct filter btn
+    document.querySelectorAll('.filter-btn').forEach(b => {
+      b.classList.remove('active');
+      if (b.textContent.toLowerCase().includes(urlNote.toLowerCase())) b.classList.add('active');
+    });
+  }
+
+  async function loadProducts() {
+    try {
+      const res = await fetch('/api/products');
+      allProducts = await res.json();
+      renderProducts();
+    } catch {
+      document.getElementById('productsGrid').innerHTML = '<div class="no-results">Failed to load products.</div>';
+    }
+  }
+
+  function filterByNote(note, btn) {
+    activeNote = note;
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    if (note === 'all') {
+      document.getElementById('pageTitle').textContent = 'ALL FRAGRANCES';
+      document.getElementById('pageSubtitle').textContent = 'Explore our complete range of luxury perfumes';
+    } else {
+      document.getElementById('pageTitle').textContent = note.toUpperCase() + ' FRAGRANCES';
+      document.getElementById('pageSubtitle').textContent = `Explore our ${note.toLowerCase()} fragrance collection`;
+    }
+    renderProducts();
+  }
+
+  function renderProducts() {
+    const filtered = activeNote === 'all'
+      ? allProducts
+      : allProducts.filter(p => p.category && p.category.toLowerCase().includes(activeNote.toLowerCase()));
+
+    const countEl = document.getElementById('productsCount');
+    countEl.innerHTML = `Showing <span>${filtered.length}</span> fragrance${filtered.length !== 1 ? 's' : ''}`;
+
+    const grid = document.getElementById('productsGrid');
+    if (filtered.length === 0) {
+      grid.innerHTML = `<div class="no-results">No fragrances found for "${activeNote}" note.</div>`;
+      return;
+    }
+
+    grid.innerHTML = '';
+    filtered.forEach(p => {
+      if (!p.variants || p.variants.length === 0) return;
+      const defaultVariant = p.variants[1] || p.variants[0];
+      const card = document.createElement('div');
+      card.className = 'product-card';
+      card.onclick = (e) => {
+        if (!e.target.classList.contains('size-btn') && !e.target.classList.contains('add-btn'))
+          window.location.href = `/product?id=${p.id}`;
+      };
+      card.innerHTML = `
+        <div class="product-img-wrap">
+          <img src="${p.image_url}" alt="${p.name}" onerror="this.src='https://via.placeholder.com/300/111/fff?text=AN'">
+          ${p.badge ? `<span class="product-badge">${p.badge}</span>` : ''}
+        </div>
+        <div class="product-info">
+          <div class="product-category">${p.category || ''}</div>
+          <div class="product-name">${p.name}</div>
+          <div class="product-desc">${p.description || ''}</div>
+          <div class="size-options">
+            ${p.variants.map((v, i) => `
+              <button class="size-btn ${i === 1 ? 'active' : ''}" data-variant='${JSON.stringify(v)}' data-pid="${p.id}">
+                ${v.size_ml}ml
+              </button>
+            `).join('')}
+          </div>
+          <div class="product-footer">
+            <div class="product-price" id="cprice-${p.id}"><span>₹</span>${Number(defaultVariant.price).toLocaleString('en-IN')}</div>
+            <button class="add-btn" data-pid="${p.id}" data-pname="${p.name}">Add to Cart</button>
+          </div>
+        </div>
+      `;
+      grid.appendChild(card);
+    });
+
+    // Size btn clicks
+    document.querySelectorAll('.size-btn').forEach(btn => {
+      btn.addEventListener('click', e => {
+        e.stopPropagation();
+        const pid = btn.dataset.pid;
+        document.querySelectorAll(`.size-btn[data-pid="${pid}"]`).forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        const v = JSON.parse(btn.dataset.variant);
+        document.getElementById(`cprice-${pid}`).innerHTML = `<span>₹</span>${Number(v.price).toLocaleString('en-IN')}`;
+      });
+    });
+
+    // Add to cart
+    document.querySelectorAll('.add-btn').forEach(btn => {
+      btn.addEventListener('click', e => {
+        e.stopPropagation();
+        const pid = btn.dataset.pid;
+        const pname = btn.dataset.pname;
+        const activeBtn = document.querySelector(`.size-btn.active[data-pid="${pid}"]`);
+        const variant = JSON.parse(activeBtn.dataset.variant);
+        const cart = getCart();
+        const existing = cart.find(i => i.variant_id === variant.id);
+        if (existing) existing.quantity++;
+        else cart.push({ product_id: parseInt(pid), variant_id: variant.id, product_name: pname, size_ml: variant.size_ml, price: variant.price, quantity: 1 });
+        saveCart(cart);
+        showToast(`${pname} (${variant.size_ml}ml) Added`);
+      });
+    });
+  }
+
+  loadProducts();
+</script>
+</body>
+</html>

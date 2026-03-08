@@ -7,96 +7,85 @@
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Cinzel:wght@400;600&family=Montserrat:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  :root {
-    --gold: #c9a84c; --gold-light: #e8d5a0; --gold-dim: #8a6f2e;
-    --black: #080808; --dark: #0e0e0e; --card: #111111;
-    --border: #2a2218; --text: #e8e0d0; --muted: #7a7060;
-  }
+  :root { --gold: #ffffff; --gold-light: #f0f0f0; --gold-dim: #aaaaaa; --black: #080808; --dark: #0e0e0e; --card: #111111; --border: #2a2218; --text: #e8e0d0; --muted: #7a7060; }
   html { scroll-behavior: smooth; }
   body { background: var(--black); color: var(--text); font-family: 'Montserrat', sans-serif; font-weight: 300; overflow-x: hidden; }
-
-  nav {
-    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 24px 60px;
-    background: linear-gradient(to bottom, rgba(8,8,8,0.98), transparent);
-  }
+  nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; display: flex; align-items: center; justify-content: space-between; padding: 24px 60px; background: linear-gradient(to bottom, rgba(8,8,8,0.98), transparent); }
   .nav-logo { font-family: 'Cinzel', serif; font-size: 20px; letter-spacing: 0.3em; color: var(--gold); text-decoration: none; }
   .nav-right { display: flex; align-items: center; gap: 40px; }
   .nav-links { display: flex; gap: 40px; list-style: none; }
   .nav-links a { font-size: 11px; letter-spacing: 0.25em; text-transform: uppercase; color: var(--text); text-decoration: none; opacity: 0.7; transition: all 0.3s; }
   .nav-links a:hover { opacity: 1; color: var(--gold); }
-  .cart-icon { position: relative; cursor: pointer; color: var(--text); text-decoration: none; }
+  .cart-icon { position: relative; color: var(--text); text-decoration: none; font-size: 18px; }
   .cart-count { position: absolute; top: -8px; right: -10px; background: var(--gold); color: var(--black); font-size: 9px; width: 18px; height: 18px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 500; }
-
   .hero { min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; position: relative; overflow: hidden; padding: 0 20px; }
   .hero-bg { position: absolute; inset: 0; background: radial-gradient(ellipse at 50% 40%, #1e1508 0%, #080808 70%); }
-  .hero-glow { position: absolute; width: 600px; height: 600px; background: radial-gradient(circle, rgba(201,168,76,0.07) 0%, transparent 70%); top: 50%; left: 50%; transform: translate(-50%, -50%); animation: pulse 4s ease-in-out infinite; }
+  .hero-glow { position: absolute; width: 600px; height: 600px; background: radial-gradient(circle, rgba(255,255,255,0.04) 0%, transparent 70%); top: 50%; left: 50%; transform: translate(-50%, -50%); animation: pulse 4s ease-in-out infinite; }
   @keyframes pulse { 0%,100% { transform: translate(-50%,-50%) scale(1); opacity:.7; } 50% { transform: translate(-50%,-50%) scale(1.1); opacity:1; } }
   .hero-content { position: relative; z-index: 2; }
   .hero-line { width: 1px; height: 80px; background: linear-gradient(to bottom, transparent, var(--gold)); margin: 0 auto 40px; }
-  .hero-tag { font-size: 10px; letter-spacing: 0.5em; text-transform: uppercase; color: var(--gold); margin-bottom: 24px; }
-  .hero-title { font-family: 'Cinzel', serif; font-size: clamp(52px, 10vw, 110px); font-weight: 400; line-height: 0.9; letter-spacing: 0.08em; background: linear-gradient(135deg, #e8d5a0 0%, #c9a84c 40%, #8a6f2e 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+  .hero-tag { font-size: 10px; letter-spacing: 0.5em; text-transform: uppercase; color: var(--gold); margin-bottom: 24px; display: block; }
+  .hero-title { font-family: 'Cinzel', serif; font-size: clamp(52px, 10vw, 110px); font-weight: 400; line-height: 0.9; letter-spacing: 0.08em; background: linear-gradient(135deg, #ffffff 0%, #d0d0d0 40%, #aaaaaa 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
   .hero-subtitle { font-family: 'Cormorant Garamond', serif; font-size: clamp(16px, 2.5vw, 24px); font-style: italic; color: var(--muted); margin-top: 20px; letter-spacing: 0.1em; }
   .hero-cta { margin-top: 60px; display: inline-block; padding: 16px 48px; border: 1px solid var(--gold); color: var(--gold); font-size: 10px; letter-spacing: 0.4em; text-transform: uppercase; text-decoration: none; position: relative; overflow: hidden; transition: color 0.4s; }
   .hero-cta::before { content: ''; position: absolute; inset: 0; background: var(--gold); transform: scaleX(0); transform-origin: left; transition: transform 0.4s ease; z-index: -1; }
   .hero-cta:hover { color: var(--black); }
   .hero-cta:hover::before { transform: scaleX(1); }
-
   section { padding: 100px 60px; }
-  .section-header { text-align: center; margin-bottom: 80px; }
+  .section-header { text-align: center; margin-bottom: 70px; }
   .section-tag { font-size: 10px; letter-spacing: 0.5em; text-transform: uppercase; color: var(--gold); display: block; margin-bottom: 16px; }
   .section-title { font-family: 'Cinzel', serif; font-size: clamp(28px, 4vw, 48px); font-weight: 400; letter-spacing: 0.1em; }
-
-  .products-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 2px; max-width: 1400px; margin: 0 auto; }
-
-  .product-card { background: var(--card); border: 1px solid var(--border); position: relative; overflow: hidden; transition: transform 0.4s, border-color 0.4s; display: flex; flex-direction: column; }
-  .product-card:hover { transform: translateY(-6px); border-color: var(--gold-dim); z-index: 2; }
-  .product-img-wrap { position: relative; height: 320px; background: linear-gradient(135deg, #0f0d08 0%, #1a1508 100%); display: flex; align-items: center; justify-content: center; overflow: hidden; }
-  .product-img-wrap img { width: 60%; height: 85%; object-fit: contain; transition: transform 0.6s; filter: drop-shadow(0 20px 40px rgba(201,168,76,0.15)); }
-  .product-card:hover .product-img-wrap img { transform: scale(1.06) translateY(-4px); }
-  .product-badge { position: absolute; top: 20px; right: 20px; background: var(--gold); color: var(--black); font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase; padding: 5px 10px; font-weight: 500; }
-
-  .product-info { padding: 28px; flex: 1; display: flex; flex-direction: column; }
-  .product-category { font-size: 9px; letter-spacing: 0.4em; text-transform: uppercase; color: var(--gold); margin-bottom: 8px; }
-  .product-name { font-family: 'Cinzel', serif; font-size: 20px; font-weight: 400; color: var(--text); margin-bottom: 8px; letter-spacing: 0.05em; }
-  .product-desc { font-family: 'Cormorant Garamond', serif; font-size: 15px; font-style: italic; color: var(--muted); line-height: 1.6; margin-bottom: 24px; }
-
-  .size-label { font-size: 9px; letter-spacing: 0.3em; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; display: block; }
-  .size-options { display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; }
-  .size-btn { padding: 7px 14px; border: 1px solid var(--border); background: transparent; color: var(--muted); font-family: 'Montserrat', sans-serif; font-size: 11px; letter-spacing: 0.1em; cursor: pointer; transition: all 0.25s; }
-  .size-btn:hover { border-color: var(--gold-dim); color: var(--gold); }
-  .size-btn.active { border-color: var(--gold); background: rgba(201,168,76,0.08); color: var(--gold); }
-
-  .product-footer { display: flex; align-items: center; justify-content: space-between; margin-top: auto; padding-top: 20px; border-top: 1px solid var(--border); }
-  .product-price { font-family: 'Cormorant Garamond', serif; font-size: 28px; font-weight: 300; color: var(--gold); }
-  .product-price span { font-size: 14px; color: var(--muted); }
-
-  .add-btn { padding: 10px 20px; background: transparent; border: 1px solid var(--gold-dim); color: var(--gold); font-family: 'Montserrat', sans-serif; font-size: 9px; letter-spacing: 0.3em; text-transform: uppercase; cursor: pointer; transition: all 0.3s; position: relative; overflow: hidden; }
-  .add-btn::before { content: ''; position: absolute; inset: 0; background: var(--gold); transform: scaleX(0); transform-origin: left; transition: transform 0.3s; z-index: -1; }
-  .add-btn:hover { color: var(--black); }
-  .add-btn:hover::before { transform: scaleX(1); }
-
-  .loading { text-align: center; padding: 80px; color: var(--muted); font-family: 'Cormorant Garamond', serif; font-size: 20px; font-style: italic; }
-
+  .notes-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; max-width: 1300px; margin: 0 auto; }
+  .note-card { position: relative; height: 320px; overflow: hidden; cursor: pointer; display: flex; align-items: flex-end; text-decoration: none; border: 1px solid var(--border); transition: border-color 0.4s; }
+  .note-card:hover { border-color: var(--gold); }
+  .note-card-bg { position: absolute; inset: 0; background-size: cover; background-position: center; transition: transform 0.6s ease; filter: brightness(0.35); }
+  .note-card:hover .note-card-bg { transform: scale(1.06); filter: brightness(0.45); }
+  .note-card-overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(8,8,8,0.95) 0%, transparent 60%); }
+  .note-card-content { position: relative; z-index: 2; padding: 28px; width: 100%; }
+  .note-icon { font-size: 28px; margin-bottom: 10px; display: block; }
+  .note-name { font-family: 'Cinzel', serif; font-size: 22px; letter-spacing: 0.08em; color: var(--text); margin-bottom: 6px; transition: color 0.3s; }
+  .note-card:hover .note-name { color: var(--gold); }
+  .note-desc { font-family: 'Cormorant Garamond', serif; font-size: 14px; font-style: italic; color: var(--muted); margin-bottom: 12px; }
+  .note-count { font-size: 9px; letter-spacing: 0.3em; text-transform: uppercase; color: var(--gold); opacity: 0.7; }
+  .note-arrow { position: absolute; top: 24px; right: 24px; font-size: 20px; color: var(--gold); opacity: 0; transform: translateX(-8px); transition: all 0.3s; z-index: 2; }
+  .note-card:hover .note-arrow { opacity: 1; transform: translateX(0); }
+  .bestsellers { padding: 80px 0 80px 60px; background: var(--dark); border-top: 1px solid var(--border); overflow: hidden; }
+  .bestsellers-header { display: flex; align-items: flex-end; justify-content: space-between; margin-bottom: 40px; padding-right: 60px; }
+  .bestsellers-header-left .section-tag { text-align: left; }
+  .bestsellers-header-left .section-title { text-align: left; font-size: clamp(22px, 3vw, 36px); }
+  .see-all { font-size: 10px; letter-spacing: 0.3em; text-transform: uppercase; color: var(--muted); text-decoration: none; border-bottom: 1px solid var(--border); padding-bottom: 4px; transition: all 0.3s; white-space: nowrap; }
+  .see-all:hover { color: var(--gold); border-color: var(--gold); }
+  .bestsellers-scroll { display: flex; gap: 2px; overflow-x: auto; padding-right: 60px; scrollbar-width: none; -ms-overflow-style: none; scroll-snap-type: x mandatory; }
+  .bestsellers-scroll::-webkit-scrollbar { display: none; }
+  .bs-card { min-width: 280px; background: var(--card); border: 1px solid var(--border); flex-shrink: 0; scroll-snap-align: start; transition: border-color 0.4s, transform 0.4s; text-decoration: none; display: block; cursor: pointer; }
+  .bs-card:hover { border-color: var(--gold); transform: translateY(-5px); }
+  .bs-img-wrap { height: 260px; background: linear-gradient(135deg, #0f0d08, #1a1508); display: flex; align-items: center; justify-content: center; overflow: hidden; position: relative; }
+  .bs-img-wrap img { width: 55%; height: 80%; object-fit: contain; transition: transform 0.5s; filter: drop-shadow(0 10px 30px rgba(255,255,255,0.08)); }
+  .bs-card:hover .bs-img-wrap img { transform: scale(1.06) translateY(-4px); }
+  .bs-badge { position: absolute; top: 16px; right: 16px; background: var(--gold); color: var(--black); font-size: 8px; letter-spacing: 0.2em; text-transform: uppercase; padding: 4px 10px; font-weight: 500; }
+  .bs-info { padding: 20px 22px; }
+  .bs-category { font-size: 9px; letter-spacing: 0.3em; text-transform: uppercase; color: var(--gold); margin-bottom: 6px; opacity: 0.7; }
+  .bs-name { font-family: 'Cinzel', serif; font-size: 17px; color: var(--text); margin-bottom: 10px; }
+  .bs-footer { display: flex; align-items: center; justify-content: space-between; }
+  .bs-price { font-family: 'Cormorant Garamond', serif; font-size: 22px; color: var(--gold); }
+  .bs-price span { font-size: 13px; color: var(--muted); }
+  .bs-btn { padding: 7px 14px; border: 1px solid var(--border); background: transparent; color: var(--muted); font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase; cursor: pointer; font-family: 'Montserrat', sans-serif; transition: all 0.3s; }
+  .bs-btn:hover { border-color: var(--gold); color: var(--gold); }
+  .scroll-controls { display: flex; gap: 10px; margin-top: 30px; padding-right: 60px; justify-content: flex-end; }
+  .scroll-btn { width: 44px; height: 44px; border: 1px solid var(--border); background: transparent; color: var(--muted); cursor: pointer; font-size: 18px; transition: all 0.3s; display: flex; align-items: center; justify-content: center; }
+  .scroll-btn:hover { border-color: var(--gold); color: var(--gold); }
   .toast { position: fixed; bottom: 30px; right: 30px; background: var(--card); border: 1px solid var(--gold); padding: 16px 24px; font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--gold); z-index: 1000; transform: translateY(100px); opacity: 0; transition: all 0.4s; }
   .toast.show { transform: translateY(0); opacity: 1; }
-
   .banner { background: linear-gradient(135deg, #100e08 0%, #1e1810 50%, #100e08 100%); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); padding: 80px 60px; text-align: center; position: relative; overflow: hidden; }
-  .banner::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse at center, rgba(201,168,76,0.06) 0%, transparent 70%); }
+  .banner::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse at center, rgba(255,255,255,0.03) 0%, transparent 70%); }
   .banner-title { font-family: 'Cormorant Garamond', serif; font-size: clamp(28px, 4vw, 56px); font-weight: 300; font-style: italic; color: var(--text); position: relative; line-height: 1.4; }
   .banner-title em { color: var(--gold); font-style: normal; }
-
   footer { padding: 60px; border-top: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 20px; }
   .footer-logo { font-family: 'Cinzel', serif; font-size: 18px; letter-spacing: 0.3em; color: var(--gold); }
   .footer-text { font-size: 11px; color: var(--muted); letter-spacing: 0.15em; }
-
-  @media (max-width: 768px) {
-    nav { padding: 20px 24px; }
-    .nav-links { display: none; }
-    section { padding: 60px 24px; }
-    footer, .banner { padding: 40px 24px; }
-  }
+  .loading { text-align: center; padding: 60px; color: var(--muted); font-family: 'Cormorant Garamond', serif; font-size: 20px; font-style: italic; }
+  @media (max-width: 900px) { nav { padding: 20px 24px; } .nav-links { display: none; } section { padding: 60px 24px; } .notes-grid { grid-template-columns: 1fr 1fr; } .bestsellers { padding: 60px 0 60px 24px; } .bestsellers-header { padding-right: 24px; } .bestsellers-scroll { padding-right: 24px; } footer, .banner { padding: 40px 24px; } }
+  @media (max-width: 560px) { .notes-grid { grid-template-columns: 1fr; } }
 </style>
 </head>
 <body>
@@ -106,11 +95,10 @@
   <div class="nav-right">
     <ul class="nav-links">
       <li><a href="#collection">Collection</a></li>
+      <li><a href="#bestsellers">Bestsellers</a></li>
       <li><a href="/admin">Admin</a></li>
     </ul>
-    <a href="/cart" class="cart-icon" id="cartIcon">
-      🛒 <span class="cart-count" id="cartCount">0</span>
-    </a>
+    <a href="/cart" class="cart-icon">🛒<span class="cart-count" id="cartCount">0</span></a>
   </div>
 </nav>
 
@@ -119,22 +107,39 @@
   <div class="hero-glow"></div>
   <div class="hero-content">
     <div class="hero-line"></div>
-    <p class="hero-tag">Est. 2024 · Crafted for the Discerning</p>
+    <span class="hero-tag">Est. 2024 · Crafted for the Discerning</span>
     <h1 class="hero-title">AROMA<br>NATION</h1>
     <p class="hero-subtitle">Where every drop tells a story</p>
     <a href="#collection" class="hero-cta">Explore Collection</a>
   </div>
 </div>
 
-<section id="collection" style="background: var(--dark);">
+<section id="collection" style="background: var(--dark); padding-bottom: 0;">
   <div class="section-header">
-    <span class="section-tag">Our Signature Range</span>
-    <h2 class="section-title">THE COLLECTION</h2>
+    <span class="section-tag">Shop by Fragrance</span>
+    <h2 class="section-title">EXPLORE NOTES</h2>
   </div>
-  <div class="products-grid" id="productsGrid">
-    <div class="loading" style="grid-column:1/-1">Loading collection...</div>
+  <div class="notes-grid" id="notesGrid">
+    <div class="loading" style="grid-column:1/-1">Loading...</div>
   </div>
 </section>
+
+<div class="bestsellers" id="bestsellers">
+  <div class="bestsellers-header">
+    <div class="bestsellers-header-left">
+      <span class="section-tag">Most Loved</span>
+      <h2 class="section-title">BESTSELLERS</h2>
+    </div>
+    <a href="/collection" class="see-all">View All →</a>
+  </div>
+  <div class="bestsellers-scroll" id="bestsellersScroll">
+    <div class="loading">Loading bestsellers...</div>
+  </div>
+  <div class="scroll-controls">
+    <button class="scroll-btn" onclick="scrollBestsellers(-1)">←</button>
+    <button class="scroll-btn" onclick="scrollBestsellers(1)">→</button>
+  </div>
+</div>
 
 <div class="banner">
   <p class="banner-title">"Luxury is not about price.<br>It is about the <em>experience</em><br>of wearing a memory."</p>
@@ -143,108 +148,109 @@
 <footer>
   <div class="footer-logo">AROMA NATION</div>
   <p class="footer-text">© 2024 Aroma Nation. All Rights Reserved.</p>
-  <p class="footer-text" style="color: var(--gold-dim);">Crafted with passion · Delivered with elegance</p>
+  <p class="footer-text" style="color:var(--gold-dim)">Crafted with passion · Delivered with elegance</p>
 </footer>
 
 <div class="toast" id="toast"></div>
 
 <script>
-  // Cart
   function getCart() { return JSON.parse(localStorage.getItem('an_cart') || '[]'); }
-  function saveCart(cart) { localStorage.setItem('an_cart', JSON.stringify(cart)); updateCartCount(); }
+  function saveCart(c) { localStorage.setItem('an_cart', JSON.stringify(c)); updateCartCount(); }
   function updateCartCount() {
-    const cart = getCart();
-    const count = cart.reduce((sum, i) => sum + i.quantity, 0);
-    document.getElementById('cartCount').textContent = count;
+    document.getElementById('cartCount').textContent = getCart().reduce((s, i) => s + i.quantity, 0);
   }
   updateCartCount();
 
-  // Toast
   let toastTimeout;
   function showToast(msg) {
     const t = document.getElementById('toast');
-    t.textContent = msg;
-    t.classList.add('show');
+    t.textContent = msg; t.classList.add('show');
     clearTimeout(toastTimeout);
     toastTimeout = setTimeout(() => t.classList.remove('show'), 2500);
   }
 
-  // Load products
-  async function loadProducts() {
-    const grid = document.getElementById('productsGrid');
+  let allProducts = [];
+
+  async function loadAll() {
     try {
-      const res = await fetch('/api/products');
-      const products = await res.json();
-      grid.innerHTML = '';
-
-      products.forEach(p => {
-        if (!p.variants || p.variants.length === 0) return;
-        const defaultVariant = p.variants[1] || p.variants[0];
-
-        const card = document.createElement('div');
-        card.className = 'product-card';
-        card.innerHTML = `
-          <div class="product-img-wrap">
-            <img src="${p.image_url}" alt="${p.name}" loading="lazy" onerror="this.src='https://via.placeholder.com/300x300/111/c9a84c?text=Perfume'">
-            ${p.badge ? `<span class="product-badge">${p.badge}</span>` : ''}
-          </div>
-          <div class="product-info">
-            <p class="product-category">${p.category || ''}</p>
-            <h3 class="product-name">${p.name}</h3>
-            <p class="product-desc">${p.description || ''}</p>
-            <span class="size-label">Select Size</span>
-            <div class="size-options">
-              ${p.variants.map((v, i) => `
-                <button class="size-btn${v.id === defaultVariant.id ? ' active' : ''}"
-                  data-variant='${JSON.stringify(v)}' data-pid="${p.id}">
-                  ${v.size_ml}ml
-                </button>
-              `).join('')}
-            </div>
-            <div class="product-footer">
-              <div class="product-price" id="price-${p.id}">
-                <span>₹</span>${Number(defaultVariant.price).toLocaleString('en-IN')}
-              </div>
-              <button class="add-btn" data-pid="${p.id}" data-pname="${p.name}">Add to Cart</button>
-            </div>
-          </div>
-        `;
-        grid.appendChild(card);
-      });
-
-      // Size btn clicks
-      document.querySelectorAll('.size-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-          const pid = btn.dataset.pid;
-          document.querySelectorAll(`.size-btn[data-pid="${pid}"]`).forEach(b => b.classList.remove('active'));
-          btn.classList.add('active');
-          const v = JSON.parse(btn.dataset.variant);
-          document.getElementById(`price-${pid}`).innerHTML = `<span>₹</span>${Number(v.price).toLocaleString('en-IN')}`;
-        });
-      });
-
-      // Add to cart
-      document.querySelectorAll('.add-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-          const pid = btn.dataset.pid;
-          const pname = btn.dataset.pname;
-          const activeBtn = document.querySelector(`.size-btn.active[data-pid="${pid}"]`);
-          const variant = JSON.parse(activeBtn.dataset.variant);
-          const cart = getCart();
-          const existing = cart.find(i => i.variant_id === variant.id);
-          if (existing) existing.quantity++;
-          else cart.push({ product_id: parseInt(pid), variant_id: variant.id, product_name: pname, size_ml: variant.size_ml, price: variant.price, quantity: 1 });
-          saveCart(cart);
-          showToast(`${pname} (${variant.size_ml}ml) Added`);
-        });
-      });
-
-    } catch (err) {
-      grid.innerHTML = '<div class="loading" style="grid-column:1/-1">Failed to load products. Make sure server is running.</div>';
+      const [productsRes, notesRes] = await Promise.all([
+        fetch('/api/products'),
+        fetch('/api/notes')
+      ]);
+      allProducts = await productsRes.json();
+      const notesData = await notesRes.json();
+      renderNotes(notesData);
+      renderBestsellers();
+    } catch {
+      document.getElementById('notesGrid').innerHTML = '<div class="loading" style="grid-column:1/-1">Failed to load. Make sure server is running.</div>';
     }
   }
 
-  loadProducts();
+  function renderNotes(notesData) {
+    const grid = document.getElementById('notesGrid');
+    grid.innerHTML = notesData.map(note => {
+      const count = allProducts.filter(p => p.category && p.category.toLowerCase().includes(note.name.toLowerCase())).length;
+      return `
+        <a href="/collection?note=${note.name}" class="note-card">
+          <div class="note-card-bg" style="background-image: url('${note.bg_image_url}')"></div>
+          <div class="note-card-overlay"></div>
+          <span class="note-arrow">→</span>
+          <div class="note-card-content">
+            <span class="note-icon">${note.icon}</span>
+            <div class="note-name">${note.name}</div>
+            <div class="note-desc">${note.description || ''}</div>
+            <span class="note-count">${count} fragrance${count !== 1 ? 's' : ''}</span>
+          </div>
+        </a>
+      `;
+    }).join('');
+  }
+
+  function renderBestsellers() {
+    const scroll = document.getElementById('bestsellersScroll');
+    let bestsellers = allProducts.filter(p => p.badge && p.badge.toLowerCase().includes('bestseller'));
+    if (bestsellers.length === 0) bestsellers = allProducts;
+    scroll.innerHTML = bestsellers.map(p => {
+      const minVariant = p.variants && p.variants.length ? p.variants[0] : null;
+      if (!minVariant) return '';
+      return `
+        <a href="/product?id=${p.id}" class="bs-card">
+          <div class="bs-img-wrap">
+            <img src="${p.image_url}" alt="${p.name}" onerror="this.src='https://via.placeholder.com/280x260/111/fff?text=AN'">
+            ${p.badge ? `<span class="bs-badge">${p.badge}</span>` : ''}
+          </div>
+          <div class="bs-info">
+            <div class="bs-category">${p.category || ''}</div>
+            <div class="bs-name">${p.name}</div>
+            <div class="bs-footer">
+              <div class="bs-price"><span>₹</span>${Number(minVariant.price).toLocaleString('en-IN')}</div>
+              <button class="bs-btn" onclick="quickAdd(event, ${p.id})">+ Cart</button>
+            </div>
+          </div>
+        </a>
+      `;
+    }).join('');
+  }
+
+  function quickAdd(e, productId) {
+    e.preventDefault();
+    e.stopPropagation();
+    const product = allProducts.find(p => p.id === productId);
+    if (!product || !product.variants.length) return;
+    const variant = product.variants[1] || product.variants[0];
+    const cart = getCart();
+    const existing = cart.find(i => i.variant_id === variant.id);
+    if (existing) existing.quantity++;
+    else cart.push({ product_id: product.id, variant_id: variant.id, product_name: product.name, size_ml: variant.size_ml, price: variant.price, quantity: 1 });
+    saveCart(cart);
+    showToast(`${product.name} Added!`);
+  }
+
+  function scrollBestsellers(dir) {
+    document.getElementById('bestsellersScroll').scrollBy({ left: dir * 300, behavior: 'smooth' });
+  }
+
+  loadAll();
 </script>
 </body>
 </html>

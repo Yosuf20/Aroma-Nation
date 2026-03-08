@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Product — Aroma Nation</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Cinzel:wght@400;600&family=Montserrat:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --gold: #ffffff; --gold-light: #f0f0f0; --gold-dim: #aaaaaa;
+    --black: #080808; --dark: #0e0e0e; --card: #111111;
+    --border: #2a2218; --text: #e8e0d0; --muted: #7a7060;
+  }
+  html { scroll-behavior: smooth; }
+  body { background: var(--black); color: var(--text); font-family: 'Montserrat', sans-serif; font-weight: 300; overflow-x: hidden; }
+
+  /* NAV */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 24px 60px;
+    background: linear-gradient(to bottom, rgba(8,8,8,0.98), transparent);
+  }
+  .nav-logo { font-family: 'Cinzel', serif; font-size: 20px; letter-spacing: 0.3em; color: var(--gold); text-decoration: none; }
+  .nav-right { display: flex; align-items: center; gap: 40px; }
+  .nav-back { font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted); text-decoration: none; transition: color 0.3s; }
+  .nav-back:hover { color: var(--gold); }
+  .cart-icon { position: relative; color: var(--text); text-decoration: none; font-size: 18px; }
+  .cart-count { position: absolute; top: -8px; right: -10px; background: var(--gold); color: var(--black); font-size: 9px; width: 18px; height: 18px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 500; }
+
+  /* PRODUCT DETAIL */
+  .product-detail {
+    min-height: 100vh;
+    padding: 120px 60px 80px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
+    max-width: 1300px;
+    margin: 0 auto;
+    align-items: start;
+  }
+
+  /* LEFT - IMAGE */
+  .product-image-section { position: sticky; top: 100px; }
+  .product-main-img {
+    width: 100%;
+    aspect-ratio: 1;
+    background: linear-gradient(135deg, #0f0d08 0%, #1a1508 50%, #0f0d08 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--border);
+    position: relative;
+    overflow: hidden;
+  }
+  .product-main-img::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse at 50% 30%, rgba(201,168,76,0.06) 0%, transparent 60%);
+  }
+  .product-main-img img {
+    width: 55%;
+    height: 75%;
+    object-fit: contain;
+    filter: drop-shadow(0 30px 60px rgba(201,168,76,0.2));
+    animation: floatImg 4s ease-in-out infinite;
+    position: relative;
+    z-index: 1;
+  }
+  @keyframes floatImg {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-12px); }
+  }
+  .product-badge-detail {
+    position: absolute;
+    top: 24px; left: 24px;
+    background: var(--gold);
+    color: var(--black);
+    font-size: 9px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    padding: 6px 14px;
+    font-weight: 500;
+    z-index: 2;
+  }
+
+  /* GOLD CORNER DECORATIONS */
+  .corner { position: absolute; width: 30px; height: 30px; }
+  .corner-tl { top: 12px; left: 12px; border-top: 1px solid var(--gold-dim); border-left: 1px solid var(--gold-dim); }
+  .corner-tr { top: 12px; right: 12px; border-top: 1px solid var(--gold-dim); border-right: 1px solid var(--gold-dim); }
+  .corner-bl { bottom: 12px; left: 12px; border-bottom: 1px solid var(--gold-dim); border-left: 1px solid var(--gold-dim); }
+  .corner-br { bottom: 12px; right: 12px; border-bottom: 1px solid var(--gold-dim); border-right: 1px solid var(--gold-dim); }
+
+  /* RIGHT - INFO */
+  .product-info-section { padding-top: 20px; }
+  .product-breadcrumb {
+    font-size: 10px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 20px;
+  }
+  .product-breadcrumb a { color: var(--muted); text-decoration: none; transition: color 0.3s; }
+  .product-breadcrumb a:hover { color: var(--gold); }
+  .product-category-tag {
+    font-size: 10px;
+    letter-spacing: 0.4em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 12px;
+    display: block;
+  }
+  .product-title {
+    font-family: 'Cinzel', serif;
+    font-size: clamp(32px, 4vw, 52px);
+    font-weight: 400;
+    letter-spacing: 0.06em;
+    color: var(--text);
+    line-height: 1.1;
+    margin-bottom: 24px;
+  }
+
+  .gold-line { width: 60px; height: 1px; background: linear-gradient(to right, var(--gold), transparent); margin-bottom: 28px; }
+
+  .product-description {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 18px;
+    font-style: italic;
+    color: var(--muted);
+    line-height: 1.8;
+    margin-bottom: 36px;
+  }
+
+  /* SIZE SELECTOR */
+  .size-section { margin-bottom: 32px; }
+  .size-title {
+    font-size: 9px;
+    letter-spacing: 0.4em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 14px;
+    display: block;
+  }
+  .size-options { display: flex; gap: 10px; flex-wrap: wrap; }
+  .size-btn {
+    padding: 12px 24px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--muted);
+    font-family: 'Montserrat', sans-serif;
+    font-size: 12px;
+    letter-spacing: 0.15em;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    min-width: 90px;
+  }
+  .size-btn:hover { border-color: var(--gold-dim); color: var(--gold); }
+  .size-btn.active { border-color: var(--gold); background: rgba(201,168,76,0.07); color: var(--gold); }
+  .size-btn .size-ml { font-size: 14px; font-weight: 500; }
+  .size-btn .size-price { font-family: 'Cormorant Garamond', serif; font-size: 16px; color: var(--gold-light); }
+  .size-btn.active .size-price { color: var(--gold); }
+
+  /* PRICE */
+  .price-display {
+    margin-bottom: 32px;
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+  }
+  .price-currency { font-family: 'Cormorant Garamond', serif; font-size: 24px; color: var(--muted); }
+  .price-amount { font-family: 'Cormorant Garamond', serif; font-size: 48px; font-weight: 300; color: var(--gold); line-height: 1; }
+
+  /* ADD TO CART */
+  .action-row { display: flex; gap: 12px; margin-bottom: 40px; }
+  .add-cart-btn {
+    flex: 1;
+    padding: 18px 32px;
+    background: var(--gold);
+    color: var(--black);
+    border: none;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 11px;
+    letter-spacing: 0.4em;
+    text-transform: uppercase;
+    cursor: pointer;
+    font-weight: 500;
+    transition: opacity 0.3s;
+    position: relative;
+    overflow: hidden;
+  }
+  .add-cart-btn:hover { opacity: 0.88; }
+  .add-cart-btn.added { background: #2a5c2a; color: #7fff7f; }
+  .wishlist-btn {
+    padding: 18px 20px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--muted);
+    cursor: pointer;
+    font-size: 18px;
+    transition: all 0.3s;
+  }
+  .wishlist-btn:hover { border-color: var(--gold-dim); color: var(--gold); }
+
+  /* DETAILS */
+  .product-details {
+    border-top: 1px solid var(--border);
+    padding-top: 32px;
+  }
+  .detail-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 12px 0;
+    border-bottom: 1px solid #1a1a14;
+    font-size: 13px;
+  }
+  .detail-label { color: var(--muted); letter-spacing: 0.1em; }
+  .detail-value { color: var(--text); text-align: right; }
+
+  /* TOAST */
+  .toast { position: fixed; bottom: 30px; right: 30px; background: var(--card); border: 1px solid var(--gold); padding: 16px 24px; font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--gold); z-index: 1000; transform: translateY(100px); opacity: 0; transition: all 0.4s; }
+  .toast.show { transform: translateY(0); opacity: 1; }
+
+  /* RECOMMENDATIONS */
+  .recommendations {
+    padding: 80px 60px;
+    border-top: 1px solid var(--border);
+    background: var(--dark);
+  }
+  .rec-header {
+    text-align: center;
+    margin-bottom: 60px;
+  }
+  .rec-tag { font-size: 10px; letter-spacing: 0.5em; text-transform: uppercase; color: var(--gold); display: block; margin-bottom: 12px; }
+  .rec-title { font-family: 'Cinzel', serif; font-size: clamp(24px, 3vw, 38px); font-weight: 400; letter-spacing: 0.1em; }
+
+  .rec-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 2px; max-width: 1300px; margin: 0 auto; }
+
+  .rec-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform 0.4s, border-color 0.4s;
+    text-decoration: none;
+    display: block;
+  }
+  .rec-card:hover { transform: translateY(-5px); border-color: var(--gold-dim); }
+  .rec-img-wrap {
+    height: 240px;
+    background: linear-gradient(135deg, #0f0d08, #1a1508);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+  .rec-img-wrap img {
+    width: 55%;
+    height: 80%;
+    object-fit: contain;
+    transition: transform 0.5s;
+    filter: drop-shadow(0 10px 20px rgba(201,168,76,0.1));
+  }
+  .rec-card:hover .rec-img-wrap img { transform: scale(1.06); }
+  .rec-info { padding: 20px; }
+  .rec-category { font-size: 9px; letter-spacing: 0.3em; text-transform: uppercase; color: var(--gold); margin-bottom: 6px; }
+  .rec-name { font-family: 'Cinzel', serif; font-size: 17px; color: var(--text); margin-bottom: 8px; }
+  .rec-price { font-family: 'Cormorant Garamond', serif; font-size: 20px; color: var(--gold); }
+
+  /* LOADING */
+  .loading { text-align: center; padding: 100px; color: var(--muted); font-family: 'Cormorant Garamond', serif; font-size: 22px; font-style: italic; }
+
+  footer { padding: 48px 60px; border-top: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; }
+  .footer-logo { font-family: 'Cinzel', serif; font-size: 18px; letter-spacing: 0.3em; color: var(--gold); }
+  .footer-text { font-size: 11px; color: var(--muted); letter-spacing: 0.1em; }
+
+  @media (max-width: 900px) {
+    .product-detail { grid-template-columns: 1fr; padding: 100px 24px 60px; gap: 40px; }
+    .product-image-section { position: static; }
+    nav { padding: 20px 24px; }
+    .recommendations { padding: 60px 24px; }
+    footer { padding: 40px 24px; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="/" class="nav-logo">AROMA NATION</a>
+  <div class="nav-right">
+    <a href="/" class="nav-back">← Collection</a>
+    <a href="/cart" class="cart-icon">🛒<span class="cart-count" id="cartCount">0</span></a>
+  </div>
+</nav>
+
+<div id="productContent">
+  <div class="loading">Loading fragrance...</div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+  // Cart
+  function getCart() { return JSON.parse(localStorage.getItem('an_cart') || '[]'); }
+  function saveCart(c) { localStorage.setItem('an_cart', JSON.stringify(c)); updateCartCount(); }
+  function updateCartCount() {
+    const count = getCart().reduce((s, i) => s + i.quantity, 0);
+    document.getElementById('cartCount').textContent = count;
+  }
+  updateCartCount();
+
+  let toastTimeout;
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg; t.classList.add('show');
+    clearTimeout(toastTimeout);
+    toastTimeout = setTimeout(() => t.classList.remove('show'), 2500);
+  }
+
+  // Get product ID from URL
+  const urlParams = new URLSearchParams(window.location.search);
+  const productId = urlParams.get('id');
+
+  let currentProduct = null;
+  let selectedVariant = null;
+
+  async function loadProduct() {
+    if (!productId) { window.location.href = '/'; return; }
+    try {
+      const res = await fetch(`/api/products/${productId}`);
+      const product = await res.json();
+      if (product.error) { window.location.href = '/'; return; }
+      currentProduct = product;
+      selectedVariant = product.variants[1] || product.variants[0];
+      renderProduct(product);
+      loadRecommendations(product.id);
+    } catch {
+      document.getElementById('productContent').innerHTML = '<div class="loading">Failed to load product.</div>';
+    }
+  }
+
+  function renderProduct(p) {
+    document.title = `${p.name} — Aroma Nation`;
+    document.getElementById('productContent').innerHTML = `
+      <div class="product-detail">
+        <div class="product-image-section">
+          <div class="product-main-img">
+            <div class="corner corner-tl"></div>
+            <div class="corner corner-tr"></div>
+            <div class="corner corner-bl"></div>
+            <div class="corner corner-br"></div>
+            ${p.badge ? `<span class="product-badge-detail">${p.badge}</span>` : ''}
+            <img src="${p.image_url}" alt="${p.name}" onerror="this.src='https://via.placeholder.com/400x400/111/c9a84c?text=AN'">
+          </div>
+        </div>
+
+        <div class="product-info-section">
+          <div class="product-breadcrumb">
+            <a href="/">Collection</a> &nbsp;/&nbsp; ${p.name}
+          </div>
+          <span class="product-category-tag">${p.category || 'Luxury Fragrance'}</span>
+          <h1 class="product-title">${p.name}</h1>
+          <div class="gold-line"></div>
+          <p class="product-description">${p.description || ''}</p>
+
+          <div class="size-section">
+            <span class="size-title">Select Size</span>
+            <div class="size-options" id="sizeOptions">
+              ${p.variants.map(v => `
+                <button class="size-btn ${v.id === selectedVariant.id ? 'active' : ''}"
+                  onclick="selectVariant(${v.id}, ${v.price})"
+                  data-id="${v.id}" data-price="${v.price}" data-size="${v.size_ml}">
+                  <span class="size-ml">${v.size_ml}ml</span>
+                  <span class="size-price">₹${Number(v.price).toLocaleString('en-IN')}</span>
+                </button>
+              `).join('')}
+            </div>
+          </div>
+
+          <div class="price-display">
+            <span class="price-currency">₹</span>
+            <span class="price-amount" id="priceAmount">${Number(selectedVariant.price).toLocaleString('en-IN')}</span>
+          </div>
+
+          <div class="action-row">
+            <button class="add-cart-btn" id="addCartBtn" onclick="addToCart()">Add to Cart</button>
+            <button class="wishlist-btn">♡</button>
+          </div>
+
+          <div class="product-details">
+            <div class="detail-row"><span class="detail-label">Category</span><span class="detail-value">${p.category || '—'}</span></div>
+            <div class="detail-row"><span class="detail-label">Available Sizes</span><span class="detail-value">${p.variants.map(v => v.size_ml + 'ml').join(', ')}</span></div>
+            <div class="detail-row"><span class="detail-label">Shipping</span><span class="detail-value" style="color:var(--gold)">Free Delivery</span></div>
+            <div class="detail-row"><span class="detail-label">Returns</span><span class="detail-value">7 Day Easy Returns</span></div>
+            <div class="detail-row"><span class="detail-label">Authenticity</span><span class="detail-value">100% Genuine</span></div>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  function selectVariant(variantId, price) {
+    selectedVariant = currentProduct.variants.find(v => v.id === variantId);
+    document.querySelectorAll('.size-btn').forEach(b => b.classList.remove('active'));
+    document.querySelector(`.size-btn[data-id="${variantId}"]`).classList.add('active');
+    document.getElementById('priceAmount').textContent = Number(price).toLocaleString('en-IN');
+  }
+
+  function addToCart() {
+    if (!currentProduct || !selectedVariant) return;
+    const cart = getCart();
+    const existing = cart.find(i => i.variant_id === selectedVariant.id);
+    if (existing) existing.quantity++;
+    else cart.push({
+      product_id: currentProduct.id,
+      variant_id: selectedVariant.id,
+      product_name: currentProduct.name,
+      size_ml: selectedVariant.size_ml,
+      price: selectedVariant.price,
+      quantity: 1
+    });
+    saveCart(cart);
+    const btn = document.getElementById('addCartBtn');
+    btn.textContent = '✓ Added to Cart';
+    btn.classList.add('added');
+    setTimeout(() => { btn.textContent = 'Add to Cart'; btn.classList.remove('added'); }, 2000);
+    showToast(`${currentProduct.name} (${selectedVariant.size_ml}ml) Added`);
+  }
+
+  async function loadRecommendations(currentId) {
+    try {
+      const res = await fetch('/api/products');
+      const all = await res.json();
+      const others = all.filter(p => p.id !== parseInt(currentId));
+      // Shuffle randomly
+      const shuffled = others.sort(() => Math.random() - 0.5).slice(0, 4);
+      if (shuffled.length === 0) return;
+
+      const recSection = document.createElement('div');
+      recSection.className = 'recommendations';
+      recSection.innerHTML = `
+        <div class="rec-header">
+          <span class="rec-tag">You May Also Like</span>
+          <h2 class="rec-title">SIMILAR FRAGRANCES</h2>
+        </div>
+        <div class="rec-grid">
+          ${shuffled.map(p => {
+            const minPrice = Math.min(...p.variants.map(v => v.price));
+            return `
+              <a href="/product?id=${p.id}" class="rec-card">
+                <div class="rec-img-wrap">
+                  <img src="${p.image_url}" alt="${p.name}" onerror="this.src='https://via.placeholder.com/300x300/111/c9a84c?text=AN'">
+                </div>
+                <div class="rec-info">
+                  <div class="rec-category">${p.category || 'Luxury Fragrance'}</div>
+                  <div class="rec-name">${p.name}</div>
+                  <div class="rec-price">from ₹${Number(minPrice).toLocaleString('en-IN')}</div>
+                </div>
+              </a>
+            `;
+          }).join('')}
+        </div>
+      `;
+
+      const footer = document.createElement('footer');
+      footer.innerHTML = `
+        <div class="footer-logo">AROMA NATION</div>
+        <p class="footer-text">© 2024 Aroma Nation. All Rights Reserved.</p>
+        <p class="footer-text" style="color:var(--gold-dim)">Crafted with passion · Delivered with elegance</p>
+      `;
+
+      document.body.appendChild(recSection);
+      document.body.appendChild(footer);
+    } catch {}
+  }
+
+  loadProduct();
+</script>
+</body>
+</html>

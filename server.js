@@ -364,6 +364,53 @@ app.delete('/api/admin/coupons/:id', requireAdmin, async (req, res) => {
   }
 });
 
+// ═══════════════════════════════════════════════════════════════════
+//  ADMIN NOTES ROUTES
+// ═══════════════════════════════════════════════════════════════════
+
+app.get('/api/admin/notes', requireAdmin, async (req, res) => {
+  try {
+    const [notes] = await pool.query('SELECT * FROM notes ORDER BY sort_order, id');
+    res.json(notes);
+  } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+app.post('/api/admin/notes', requireAdmin, async (req, res) => {
+  const { name, icon, description, bg_image_url, sort_order } = req.body;
+  try {
+    const [result] = await pool.query(
+      'INSERT INTO notes (name, icon, description, bg_image_url, sort_order) VALUES (?,?,?,?,?)',
+      [name, icon || '🌿', description, bg_image_url, sort_order || 0]
+    );
+    res.json({ success: true, id: result.insertId });
+  } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+app.put('/api/admin/notes/:id', requireAdmin, async (req, res) => {
+  const { name, icon, description, bg_image_url, is_active, sort_order } = req.body;
+  try {
+    await pool.query(
+      'UPDATE notes SET name=?, icon=?, description=?, bg_image_url=?, is_active=?, sort_order=? WHERE id=?',
+      [name, icon, description, bg_image_url, is_active ? 1 : 0, sort_order || 0, req.params.id]
+    );
+    res.json({ success: true });
+  } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+app.delete('/api/admin/notes/:id', requireAdmin, async (req, res) => {
+  try {
+    await pool.query('DELETE FROM notes WHERE id = ?', [req.params.id]);
+    res.json({ success: true });
+  } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+app.get('/api/notes', async (req, res) => {
+  try {
+    const [notes] = await pool.query('SELECT * FROM notes WHERE is_active = 1 ORDER BY sort_order, id');
+    res.json(notes);
+  } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
 // ─── DASHBOARD STATS ─────────────────────────────────────────────
 app.get('/api/admin/stats', requireAdmin, async (req, res) => {
   try {
@@ -382,6 +429,8 @@ app.get('/api/admin/stats', requireAdmin, async (req, res) => {
 app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'public', 'index.html')));
 app.get('/cart', (req, res) => res.sendFile(path.join(__dirname, 'public', 'cart.html')));
 app.get('/checkout', (req, res) => res.sendFile(path.join(__dirname, 'public', 'checkout.html')));
+app.get('/product', (req, res) => res.sendFile(path.join(__dirname, 'public', 'product.html')));
+app.get('/collection', (req, res) => res.sendFile(path.join(__dirname, 'public', 'collection.html')));
 app.get('/admin', (req, res) => res.sendFile(path.join(__dirname, 'admin', 'index.html')));
 
 app.post('/api/upload', requireAdmin, upload.single('image'), (req, res) => {

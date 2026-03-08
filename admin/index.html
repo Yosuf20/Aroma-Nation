@@ -7,7 +7,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  :root { --gold:#c9a84c; --gold-dim:#8a6f2e; --black:#080808; --dark:#0e0e0e; --card:#111; --card2:#161616; --border:#222; --text:#e8e0d0; --muted:#666; }
+  :root { --gold:#ffffff; --gold-dim:#aaaaaa; --black:#080808; --dark:#0e0e0e; --card:#111; --card2:#161616; --border:#222; --text:#e8e0d0; --muted:#666; }
   body { background: var(--dark); color: var(--text); font-family: 'Montserrat', sans-serif; font-weight: 400; display: flex; min-height: 100vh; }
 
   /* LOGIN */
@@ -126,6 +126,7 @@
       <div class="nav-item" onclick="switchTab('orders')"><span class="icon">📦</span> Orders</div>
       <div class="nav-item" onclick="switchTab('customers')"><span class="icon">👤</span> Customers</div>
       <div class="nav-item" onclick="switchTab('coupons')"><span class="icon">🏷️</span> Coupons</div>
+      <div class="nav-item" onclick="switchTab('notes')"><span class="icon">🌿</span> Notes</div>
     </nav>
     <div class="sidebar-bottom">
       <button class="logout-btn" onclick="doLogout()">Sign Out</button>
@@ -190,6 +191,7 @@ function switchTab(tab) {
   else if (tab === 'orders') renderOrders();
   else if (tab === 'customers') renderCustomers();
   else if (tab === 'coupons') renderCoupons();
+  else if (tab === 'notes') renderNotes();
 }
 
 // ─── DASHBOARD ────────────────────────────────────────────────────
@@ -516,6 +518,95 @@ function showModal(html) {
 }
 function closeModal() { document.getElementById('modalOverlay').style.display = 'none'; }
 
+// ─── NOTES ───────────────────────────────────────────────────────
+async function renderNotes() {
+  const notes = await (await fetch('/api/admin/notes')).json();
+  document.getElementById('tabContent').innerHTML = `
+    <div class="table-wrap">
+      <div class="table-header">
+        <h3>Fragrance Notes (${notes.length})</h3>
+        <button class="btn btn-gold" onclick="openNoteModal()">+ Add Note</button>
+      </div>
+      <table>
+        <thead><tr><th>Icon</th><th>Name</th><th>Description</th><th>Status</th><th>Order</th><th>Actions</th></tr></thead>
+        <tbody>
+          ${notes.map(n => `
+            <tr>
+              <td style="font-size:24px">${n.icon}</td>
+              <td style="font-family:'Cinzel',serif;color:var(--gold)">${n.name}</td>
+              <td style="color:var(--muted);font-size:12px">${n.description || '-'}</td>
+              <td><span class="badge ${n.is_active ? 'badge-delivered' : 'badge-cancelled'}">${n.is_active ? 'Active' : 'Inactive'}</span></td>
+              <td style="color:var(--muted)">${n.sort_order}</td>
+              <td style="display:flex;gap:8px">
+                <button class="btn btn-outline btn-sm" onclick='openNoteModal(${JSON.stringify(n)})'>Edit</button>
+                <button class="btn btn-danger btn-sm" onclick="deleteNote(${n.id})">Delete</button>
+              </td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>
+    </div>
+  `;
+}
+
+function openNoteModal(n = null) {
+  const isEdit = !!n;
+  showModal(`
+    <div class="modal-title">${isEdit ? 'Edit Note' : 'Add New Note'}</div>
+    <div class="form-row">
+      <div class="form-group"><label>Note Name *</label><input id="nName" value="${isEdit ? n.name : ''}" placeholder="e.g. Woody"></div>
+      <div class="form-group"><label>Icon (emoji)</label><input id="nIcon" value="${isEdit ? n.icon : '🌿'}" placeholder="🌿"></div>
+    </div>
+    <div class="form-group"><label>Description</label><input id="nDesc" value="${isEdit ? (n.description||'') : ''}" placeholder="e.g. Deep, earthy & grounded"></div>
+    <div class="form-group">
+      <label>Background Image</label>
+      <div style="display:flex;gap:10px;align-items:center">
+        <input id="nBg" value="${isEdit ? (n.bg_image_url||'') : ''}" placeholder="Paste URL or upload" style="flex:1;background:var(--black);border:1px solid var(--border);color:var(--text);padding:11px 14px;font-family:'Montserrat',sans-serif;font-size:13px;outline:none;">
+        <label for="noteBgUpload" style="padding:11px 16px;border:1px solid var(--gold-dim);color:var(--gold);font-size:10px;letter-spacing:0.2em;cursor:pointer;white-space:nowrap">📁 Upload</label>
+        <input type="file" id="noteBgUpload" accept="image/*" style="display:none" onchange="uploadNoteImage()">
+      </div>
+      <div id="noteUploadStatus" style="font-size:11px;color:var(--muted);margin-top:6px"></div>
+      ${isEdit && n.bg_image_url ? `<img src="${n.bg_image_url}" style="width:100%;height:80px;object-fit:cover;margin-top:10px;border:1px solid var(--border)">` : ''}
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Sort Order</label><input type="number" id="nOrder" value="${isEdit ? n.sort_order : 0}"></div>
+      <div class="form-group"><label>Status</label>
+        <select id="nActive">
+          <option value="1" ${!isEdit||n.is_active?'selected':''}>Active</option>
+          <option value="0" ${isEdit&&!n.is_active?'selected':''}>Inactive</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-gold" onclick="saveNote(${isEdit ? n.id : 'null'})">${isEdit ? 'Save' : 'Add Note'}</button>
+    </div>
+  `);
+}
+
+async function saveNote(id) {
+  const body = {
+    name: document.getElementById('nName').value,
+    icon: document.getElementById('nIcon').value,
+    description: document.getElementById('nDesc').value,
+    bg_image_url: document.getElementById('nBg').value,
+    sort_order: document.getElementById('nOrder').value || 0,
+    is_active: document.getElementById('nActive').value === '1'
+  };
+  const url = id ? `/api/admin/notes/${id}` : '/api/admin/notes';
+  const method = id ? 'PUT' : 'POST';
+  const res = await fetch(url, { method, headers: {'Content-Type':'application/json'}, body: JSON.stringify(body) });
+  const data = await res.json();
+  if (data.success) { closeModal(); toast(id ? 'Note updated!' : 'Note added!'); renderNotes(); }
+  else alert('Error: ' + data.error);
+}
+
+async function deleteNote(id) {
+  if (!confirm('Delete this note?')) return;
+  await fetch(`/api/admin/notes/${id}`, { method: 'DELETE' });
+  toast('Note deleted.'); renderNotes();
+}
+
 // ─── CHECK SESSION ────────────────────────────────────────────────
 (async function() {
   const res = await fetch('/api/admin/check');
@@ -540,6 +631,31 @@ async function uploadImage() {
     const data = await res.json();
     if (data.url) {
       document.getElementById('pImg').value = data.url;
+      status.textContent = '✅ Image uploaded!';
+      status.style.color = '#4caf50';
+    } else {
+      status.textContent = '❌ Upload failed';
+      status.style.color = '#e74c3c';
+    }
+  } catch {
+    status.textContent = '❌ Upload failed';
+    status.style.color = '#e74c3c';
+  }
+}
+
+async function uploadNoteImage() {
+  const file = document.getElementById('noteBgUpload').files[0];
+  if (!file) return;
+  const status = document.getElementById('noteUploadStatus');
+  status.textContent = 'Uploading...';
+  status.style.color = 'var(--muted)';
+  const formData = new FormData();
+  formData.append('image', file);
+  try {
+    const res = await fetch('/api/upload', { method: 'POST', body: formData });
+    const data = await res.json();
+    if (data.url) {
+      document.getElementById('nBg').value = data.url;
       status.textContent = '✅ Image uploaded!';
       status.style.color = '#4caf50';
     } else {
