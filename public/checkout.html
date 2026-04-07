@@ -7,27 +7,48 @@
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,400&family=Cinzel:wght@400;600&family=Montserrat:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  :root { --gold:#ffffff; --gold-dim:#aaaaaa; --black:#080808; --dark:#0e0e0e; --card:#111111; --border:#2a2218; --text:#e8e0d0; --muted:#7a7060; }
+  :root { --gold:#ffffff; --gold-light:#f0f0f0; --gold-dim:#aaaaaa; --black:#080808; --dark:#0e0e0e; --card:#111; --border:#2a2218; --text:#e8e0d0; --muted:#7a7060; }
   body { background: var(--black); color: var(--text); font-family: 'Montserrat', sans-serif; font-weight: 300; min-height: 100vh; }
   nav { display: flex; align-items: center; justify-content: space-between; padding: 24px 60px; border-bottom: 1px solid var(--border); background: var(--dark); }
   .nav-logo { font-family: 'Cinzel', serif; font-size: 20px; letter-spacing: 0.3em; color: var(--gold); text-decoration: none; }
-  .nav-back { font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted); text-decoration: none; }
+  .nav-back { font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted); text-decoration: none; transition: color 0.3s; }
   .nav-back:hover { color: var(--gold); }
-
   .page { max-width: 1100px; margin: 0 auto; padding: 60px 40px; }
   .page-title { font-family: 'Cinzel', serif; font-size: 36px; letter-spacing: 0.1em; color: var(--gold); margin-bottom: 60px; }
   .checkout-layout { display: grid; grid-template-columns: 1fr 380px; gap: 40px; }
-
   .form-section { background: var(--card); border: 1px solid var(--border); padding: 40px; }
   .form-section-title { font-family: 'Cinzel', serif; font-size: 16px; letter-spacing: 0.15em; color: var(--text); margin-bottom: 28px; padding-bottom: 16px; border-bottom: 1px solid var(--border); }
-  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
   .form-field { display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; }
   .form-field.full { grid-column: 1/-1; }
   label { font-size: 9px; letter-spacing: 0.3em; text-transform: uppercase; color: var(--muted); }
   input, textarea, select { background: var(--black); border: 1px solid var(--border); color: var(--text); padding: 12px 16px; font-family: 'Montserrat', sans-serif; font-size: 13px; font-weight: 300; outline: none; transition: border-color 0.3s; width: 100%; }
   input:focus, textarea:focus, select:focus { border-color: var(--gold-dim); }
-  select { appearance: none; cursor: pointer; }
   textarea { resize: vertical; min-height: 80px; }
+  .payment-options { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+  .payment-opt { padding: 14px 16px; border: 1px solid var(--border); background: transparent; color: var(--muted); font-family: 'Montserrat', sans-serif; font-size: 11px; letter-spacing: 0.1em; cursor: pointer; transition: all 0.25s; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 6px; }
+  .payment-opt .pay-icon { font-size: 22px; }
+  .payment-opt:hover { border-color: var(--gold-dim); color: var(--text); }
+  .payment-opt.active { border-color: var(--gold); background: rgba(255,255,255,0.04); color: var(--gold); }
+  .qr-section { margin-top: 24px; padding: 24px; border: 1px solid var(--border); background: var(--black); text-align: center; display: none; }
+  .qr-section.show { display: block; }
+  .qr-title { font-family: 'Cinzel', serif; font-size: 14px; letter-spacing: 0.1em; color: var(--text); margin-bottom: 6px; }
+  .qr-subtitle { font-size: 11px; color: var(--muted); letter-spacing: 0.1em; margin-bottom: 20px; }
+  .qr-img { width: 200px; height: 200px; margin: 0 auto 16px; display: block; border: 4px solid white; }
+  .upi-id { font-size: 13px; color: var(--gold); letter-spacing: 0.1em; margin-bottom: 8px; }
+  .qr-amount { font-family: 'Cormorant Garamond', serif; font-size: 28px; color: var(--gold); margin-bottom: 16px; }
+  .qr-note { font-size: 10px; color: var(--muted); letter-spacing: 0.1em; line-height: 1.6; margin-bottom: 16px; }
+
+  /* SCREENSHOT UPLOAD */
+  .ss-upload { border: 1px dashed var(--border); padding: 20px; text-align: center; cursor: pointer; transition: border-color 0.3s; margin-bottom: 12px; }
+  .ss-upload:hover { border-color: var(--gold-dim); }
+  .ss-label { font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted); cursor: pointer; display: block; }
+  .ss-label span { font-size: 28px; display: block; margin-bottom: 8px; }
+  .ss-preview { width: 100%; max-height: 160px; object-fit: cover; margin-top: 12px; border: 1px solid var(--border); display: none; }
+  .ss-status { font-size: 11px; margin-top: 8px; letter-spacing: 0.1em; }
+  .paid-btn { width: 100%; padding: 14px; background: #1a3a1a; border: 1px solid #2d6b2d; color: #4caf50; font-family: 'Montserrat', sans-serif; font-size: 10px; letter-spacing: 0.3em; text-transform: uppercase; cursor: pointer; transition: all 0.3s; }
+  .paid-btn:hover { background: #2d6b2d; }
+  .paid-btn:disabled { opacity: 0.4; cursor: not-allowed; }
 
   .order-summary { background: var(--card); border: 1px solid var(--border); padding: 32px; height: fit-content; position: sticky; top: 30px; }
   .summary-title { font-family: 'Cinzel', serif; font-size: 18px; letter-spacing: 0.1em; margin-bottom: 24px; }
@@ -38,18 +59,16 @@
   .order-item-price { color: var(--gold); font-family: 'Cormorant Garamond', serif; font-size: 18px; }
   .summary-row { display: flex; justify-content: space-between; margin-bottom: 12px; font-size: 13px; color: var(--muted); }
   .summary-row.total { border-top: 1px solid var(--border); padding-top: 16px; margin-top: 8px; font-family: 'Cormorant Garamond', serif; font-size: 26px; color: var(--gold); }
-
   .place-btn { width: 100%; padding: 18px; background: var(--gold); color: var(--black); border: none; font-family: 'Montserrat', sans-serif; font-size: 11px; letter-spacing: 0.4em; text-transform: uppercase; cursor: pointer; margin-top: 24px; font-weight: 500; transition: opacity 0.3s; }
   .place-btn:hover { opacity: 0.9; }
   .place-btn:disabled { opacity: 0.4; cursor: not-allowed; }
-
   .success-screen { text-align: center; padding: 80px 40px; }
+  .success-icon { font-size: 60px; margin-bottom: 20px; }
   .success-screen h2 { font-family: 'Cinzel', serif; font-size: 36px; color: var(--gold); margin-bottom: 20px; }
-  .success-screen p { color: var(--muted); font-family: 'Cormorant Garamond', serif; font-size: 20px; font-style: italic; margin-bottom: 40px; }
-  .success-screen a { display: inline-block; padding: 14px 40px; border: 1px solid var(--gold); color: var(--gold); text-decoration: none; font-size: 10px; letter-spacing: 0.4em; text-transform: uppercase; transition: all 0.3s; }
+  .success-screen p { color: var(--muted); font-family: 'Cormorant Garamond', serif; font-size: 20px; font-style: italic; margin-bottom: 12px; }
+  .success-screen a { display: inline-block; margin-top: 30px; padding: 14px 40px; border: 1px solid var(--gold); color: var(--gold); text-decoration: none; font-size: 10px; letter-spacing: 0.4em; text-transform: uppercase; transition: all 0.3s; }
   .success-screen a:hover { background: var(--gold); color: var(--black); }
-
-  @media (max-width: 768px) { .checkout-layout { grid-template-columns: 1fr; } nav, .page { padding: 20px 24px; } .form-grid { grid-template-columns: 1fr; } }
+  @media (max-width: 768px) { .checkout-layout { grid-template-columns: 1fr; } nav, .page { padding: 20px 24px; } .form-grid { grid-template-columns: 1fr; } .payment-options { grid-template-columns: 1fr 1fr; } }
 </style>
 </head>
 <body>
@@ -64,14 +83,15 @@
 </div>
 
 <script>
+  const UPI_ID = 'jyosuf6@oksbi';
+  const STORE_NAME = 'Aroma Nation';
   const checkoutData = JSON.parse(sessionStorage.getItem('an_checkout') || '{"cart":[],"total":0}');
+  let selectedPayment = 'UPI';
+  let screenshotFile = null;
 
   function renderCheckout() {
     const { cart, coupon, total } = checkoutData;
-    if (!cart || cart.length === 0) {
-      window.location.href = '/cart';
-      return;
-    }
+    if (!cart || cart.length === 0) { window.location.href = '/cart'; return; }
     const subtotal = cart.reduce((s, i) => s + i.price * i.quantity, 0);
     const discount = coupon ? coupon.discount : 0;
 
@@ -81,19 +101,35 @@
           <div class="form-section">
             <h2 class="form-section-title">Delivery Information</h2>
             <div class="form-grid">
-              <div class="form-field"><label>Full Name *</label><input type="text" id="name" placeholder="Your full name" required></div>
-              <div class="form-field"><label>Phone *</label><input type="tel" id="phone" placeholder="+91 XXXXX XXXXX" required></div>
-              <div class="form-field full"><label>Email *</label><input type="email" id="email" placeholder="your@email.com" required></div>
-              <div class="form-field full"><label>Shipping Address *</label><textarea id="address" placeholder="House no., Street, Area, City, State, PIN" required></textarea></div>
-              <div class="form-field full"><label>Payment Method</label>
-                <select id="payment">
-                  <option value="COD">Cash on Delivery</option>
-                  <option value="UPI">UPI</option>
-                  <option value="Card">Credit / Debit Card</option>
-                  <option value="NetBanking">Net Banking</option>
-                </select>
-              </div>
+              <div class="form-field"><label>Full Name *</label><input type="text" id="name" placeholder="Your full name"></div>
+              <div class="form-field"><label>Phone *</label><input type="tel" id="phone" placeholder="+91 XXXXX XXXXX"></div>
+              <div class="form-field full"><label>Email *</label><input type="email" id="email" placeholder="your@email.com"></div>
+              <div class="form-field full"><label>Shipping Address *</label><textarea id="address" placeholder="House no., Street, Area, City, State, PIN"></textarea></div>
               <div class="form-field full"><label>Order Notes (Optional)</label><input type="text" id="notes" placeholder="Any special instructions..."></div>
+            </div>
+
+            
+            
+
+            <div class="qr-section show" id="qrSection">
+              <div class="qr-title">Scan & Pay via UPI</div>
+              <div class="qr-subtitle">Use any UPI app — GPay, PhonePe, Paytm, etc.</div>
+              <img class="qr-img" id="qrImg" src="" alt="UPI QR Code">
+              <div class="upi-id">UPI ID: ${UPI_ID}</div>
+              <div class="qr-amount">₹${Number(total).toLocaleString('en-IN')}</div>
+              <div class="qr-note">After payment, upload your payment screenshot below and click Place Order.</div>
+
+              <div class="ss-upload" onclick="document.getElementById('ssInput').click()">
+                <input type="file" id="ssInput" accept="image/*" onchange="previewScreenshot(this)">
+                <label class="ss-label">
+                  <span>📸</span>
+                  Upload Payment Screenshot *
+                </label>
+                <img class="ss-preview" id="ssPreview">
+                <div class="ss-status" id="ssStatus"></div>
+              </div>
+
+              <button class="paid-btn" id="paidBtn" onclick="placeOrder(true)"> Place Order</button>
             </div>
           </div>
         </div>
@@ -114,33 +150,69 @@
           <div class="summary-row"><span>Subtotal</span><span>₹${subtotal.toLocaleString('en-IN')}</span></div>
           ${coupon ? `<div class="summary-row" style="color:#4caf50"><span>Coupon (${coupon.code})</span><span>−₹${discount.toLocaleString('en-IN')}</span></div>` : ''}
           <div class="summary-row"><span>Shipping</span><span style="color:var(--gold)">Free</span></div>
-          <div class="summary-row total"><span>Total</span><span>₹${total.toLocaleString('en-IN')}</span></div>
-          <button class="place-btn" id="placeBtn" onclick="placeOrder()">Place Order</button>
+          <div class="summary-row total"><span>Total</span><span>₹${Number(total).toLocaleString('en-IN')}</span></div>
           <p style="font-size:10px;color:var(--muted);text-align:center;margin-top:16px;letter-spacing:0.1em">Secure & Encrypted Checkout</p>
         </div>
       </div>
     `;
+
+    generateQR(total);
   }
 
-  async function placeOrder() {
+  function previewScreenshot(input) {
+    const file = input.files[0];
+    if (!file) return;
+    screenshotFile = file;
+    const reader = new FileReader();
+    reader.onload = e => {
+      const preview = document.getElementById('ssPreview');
+      preview.src = e.target.result;
+      preview.style.display = 'block';
+      const status = document.getElementById('ssStatus');
+      status.textContent = '✅ Screenshot selected: ' + file.name;
+      status.style.color = '#4caf50';
+    };
+    reader.readAsDataURL(file);
+  }
+
+
+  function generateQR(amount) {
+    const upiUrl = `upi://pay?pa=${UPI_ID}&pn=${encodeURIComponent(STORE_NAME)}&am=${amount}&cu=INR&tn=${encodeURIComponent('Aroma Nation Order')}`;
+    const qrApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(upiUrl)}`;
+    const img = document.getElementById('qrImg');
+    if (img) img.src = qrApiUrl;
+  }
+
+  async function placeOrder(isPaid) {
     const { cart, coupon, total } = checkoutData;
     const name = document.getElementById('name').value.trim();
     const email = document.getElementById('email').value.trim();
     const phone = document.getElementById('phone').value.trim();
     const address = document.getElementById('address').value.trim();
-    const payment = document.getElementById('payment').value;
     const notes = document.getElementById('notes').value.trim();
 
     if (!name || !email || !phone || !address) { alert('Please fill in all required fields.'); return; }
+    if (isPaid && !screenshotFile) { alert('Please upload your payment screenshot first.'); return; }
 
-    const btn = document.getElementById('placeBtn');
-    btn.disabled = true;
-    btn.textContent = 'Placing Order...';
+    const allBtns = document.querySelectorAll('.paid-btn, #placeBtn');
+    allBtns.forEach(b => { b.disabled = true; b.textContent = 'Placing Order...'; });
 
     const subtotal = cart.reduce((s, i) => s + i.price * i.quantity, 0);
     const discount = coupon ? coupon.discount : 0;
+    const paymentLabel = isPaid ? 'UPI (Paid)' : selectedPayment;
 
     try {
+      // Step 1: Upload screenshot if UPI payment
+      let screenshotUrl = null;
+      if (isPaid && screenshotFile) {
+        const formData = new FormData();
+        formData.append('image', screenshotFile);
+        const uploadRes = await fetch('/api/upload', { method: 'POST', body: formData });
+        const uploadData = await uploadRes.json();
+        if (uploadData.url) screenshotUrl = uploadData.url;
+      }
+
+      // Step 2: Place order
       const res = await fetch('/api/orders', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -148,29 +220,33 @@
           customer_name: name, customer_email: email, customer_phone: phone,
           shipping_address: address, items: cart,
           coupon_code: coupon ? coupon.code : null,
-          subtotal, discount_amount: discount, total, payment_method: payment, notes
+          subtotal, discount_amount: discount, total,
+          payment_method: paymentLabel, notes,
+          screenshot_url: screenshotUrl
         })
       });
+
       const data = await res.json();
       if (data.success) {
         localStorage.removeItem('an_cart');
         sessionStorage.removeItem('an_checkout');
         document.getElementById('mainContent').innerHTML = `
           <div class="success-screen">
+            <div class="success-icon">🌹</div>
             <h2>Order Placed!</h2>
-            <p>Thank you. Your order #${data.order_id} has been received.<br>We'll contact you shortly on ${phone}.</p>
+            <p>Thank you, ${name}.</p>
+            <p>Your order <strong style="color:var(--gold)">#${data.order_id}</strong> has been received.</p>
+            <p style="font-size:14px;margin-top:8px">We'll contact you on <strong>${phone}</strong> shortly.</p>
             <a href="/">Continue Shopping</a>
           </div>
         `;
       } else {
         alert('Error: ' + data.error);
-        btn.disabled = false;
-        btn.textContent = 'Place Order';
+        allBtns.forEach(b => { b.disabled = false; b.textContent = isPaid ? '✅ I have paid — Place Order' : 'Place Order'; });
       }
     } catch {
       alert('Something went wrong. Please try again.');
-      btn.disabled = false;
-      btn.textContent = 'Place Order';
+      allBtns.forEach(b => { b.disabled = false; b.textContent = isPaid ? '✅ I have paid — Place Order' : 'Place Order'; });
     }
   }
 

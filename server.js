@@ -5,19 +5,65 @@ const session = require('express-session');
 const cors = require('cors');
 const path = require('path');
 const multer = require('multer');
-const fs = require('fs');
+const cloudinary = require('cloudinary').v2;
 
-const uploadDir = path.join(__dirname, 'public/uploads');
-if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir, { recursive: true });
-
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => cb(null, uploadDir),
-  filename: (req, file, cb) => cb(null, Date.now() + '-' + file.originalname.replace(/\s/g, '-'))
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET
 });
-const upload = multer({ storage });
 
+// Use memory storage instead of disk
+const storage = multer.memoryStorage();
+const upload = multer({ storage });
+const fs = require('fs');
 const app = express();
 const PORT = process.env.PORT || 3000;
+
+// ─── TELEGRAM NOTIFICATION ────────────────────────────────────────
+async function sendTelegramNotification(order) {
+  const token = process.env.TELEGRAM_BOT_TOKEN;
+  const chatId = process.env.TELEGRAM_CHAT_ID;
+  if (!token || !chatId) return;
+
+  const itemsList = order.items.map(i =>
+    `  • ${i.product_name} (${i.size_ml}ml x${i.quantity}) = ₹${(i.price * i.quantity).toLocaleString('en-IN')}`
+  ).join('\n');
+
+  const msg = `🌹 *NEW ORDER — Aroma Nation*\n\n` +
+    `*Order ID:* #${order.id}\n` +
+    `*Payment:* ${order.payment_method}\n\n` +
+    `👤 *Customer*\n` +
+    `Name: ${order.customer_name}\n` +
+    `Phone: ${order.customer_phone}\n` +
+    `Email: ${order.customer_email}\n` +
+    `Address: ${order.shipping_address}\n\n` +
+    `🛒 *Items*\n${itemsList}\n\n` +
+    (order.coupon_code ? `🏷️ Coupon: ${order.coupon_code} (-₹${order.discount_amount})\n` : '') +
+    `💰 *Total: ₹${Number(order.total).toLocaleString('en-IN')}*\n\n` +
+    (order.screenshot_url ? `📸 Payment screenshot attached below` : `⚠️ No payment screenshot`);
+
+  try {
+    // Send text message
+    await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ chat_id: chatId, text: msg, parse_mode: 'Markdown' })
+    });
+
+    // Send screenshot if exists
+    if (order.screenshot_url) {
+      const screenshotFullUrl = `${order.base_url}${order.screenshot_url}`;
+      await fetch(`https://api.telegram.org/bot${token}/sendPhoto`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ chat_id: chatId, photo: screenshotFullUrl, caption: `Payment screenshot for Order #${order.id}` })
+      });
+    }
+  } catch (err) {
+    console.error('Telegram notification failed:', err.message);
+  }
+}
 
 // ─── DB CONNECTION ────────────────────────────────────────────────
 const pool = mysql.createPool({
@@ -134,8 +180,8 @@ app.post('/api/orders', async (req, res) => {
 
     // Create order
     const [orderResult] = await conn.query(
-      'INSERT INTO orders (customer_id, customer_name, customer_email, customer_phone, shipping_address, subtotal, discount_amount, total, coupon_code, payment_method, notes) VALUES (?,?,?,?,?,?,?,?,?,?,?)',
-      [customerId, customer_name, customer_email, customer_phone, shipping_address, subtotal, discount_amount || 0, total, coupon_code || null, payment_method || 'COD', notes || null]
+      'INSERT INTO orders (customer_id, customer_name, customer_email, customer_phone, shipping_address, subtotal, discount_amount, total, coupon_code, payment_method, notes, screenshot_url) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)',
+      [customerId, customer_name, customer_email, customer_phone, shipping_address, subtotal, discount_amount || 0, total, coupon_code || null, payment_method || 'COD', notes || null, req.body.screenshot_url || null]
     );
     const orderId = orderResult.insertId;
 
@@ -154,7 +200,20 @@ app.post('/api/orders', async (req, res) => {
     }
 
     await conn.commit();
-    res.json({ success: true, order_id: orderId });
+
+// Send Telegram notification
+  sendTelegramNotification({
+  id: orderId,
+  customer_name, customer_email, customer_phone,
+  shipping_address, payment_method: payment_method || 'COD',
+  coupon_code: coupon_code || null,
+  discount_amount: discount_amount || 0,
+  total, items,
+  screenshot_url: req.body.screenshot_url || null,
+  base_url: `${req.protocol}://${req.get('host')}`
+});
+
+res.json({ success: true, order_id: orderId });
   } catch (err) {
     await conn.rollback();
     res.status(500).json({ error: err.message });
@@ -433,9 +492,17 @@ app.get('/product', (req, res) => res.sendFile(path.join(__dirname, 'public', 'p
 app.get('/collection', (req, res) => res.sendFile(path.join(__dirname, 'public', 'collection.html')));
 app.get('/admin', (req, res) => res.sendFile(path.join(__dirname, 'admin', 'index.html')));
 
-app.post('/api/upload', requireAdmin, upload.single('image'), (req, res) => {
+app.post('/api/upload', upload.single('image'), (req, res) => {
   if (!req.file) return res.status(400).json({ error: 'No file uploaded' });
-  res.json({ url: `/uploads/${req.file.filename}` });
+  
+  const stream = cloudinary.uploader.upload_stream(
+    { folder: 'aroma-nation' },
+    (error, result) => {
+      if (error) return res.status(500).json({ error: error.message });
+      res.json({ url: result.secure_url });
+    }
+  );
+  stream.end(req.file.buffer);
 });
 
 // ─── START ────────────────────────────────────────────────────────

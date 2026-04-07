@@ -373,7 +373,9 @@ async function renderOrders(status = '', search = '') {
             <tr>
               <td style="color:var(--gold)">#${o.id}</td>
               <td>${o.customer_name}<br><span style="color:var(--muted);font-size:11px">${o.customer_phone||''}</span></td>
-              <td style="font-size:12px;color:var(--muted)">${(o.items||[]).map(i=>`${i.product_name} ${i.size_ml}ml×${i.quantity}`).join('<br>')}</td>
+              <td style="font-size:12px;color:var(--muted)">${(o.items||[]).map(i=>`${i.product_name} ${i.size_ml}ml×${i.quantity}`).join('<br>')}
+                ${o.screenshot_url ? `<br><a href="${o.screenshot_url}" target="_blank" style="color:var(--gold);font-size:10px;letter-spacing:0.1em">📸 View Screenshot</a>` : '<br><span style="color:var(--muted);font-size:10px">No screenshot</span>'}
+              </td>
               <td style="font-family:'Cormorant Garamond',serif;font-size:20px;color:var(--gold)">₹${Number(o.total).toLocaleString('en-IN')}</td>
               <td style="font-size:12px;color:var(--muted)">${o.payment_method}</td>
               <td><span class="badge badge-${o.status}">${o.status}</span></td>
